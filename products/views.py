@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from .models import *
+import random
 
 def product_list(request, category_slug=None):
     category = None
@@ -10,9 +11,12 @@ def product_list(request, category_slug=None):
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
+
+    products = list(products)
+    random.shuffle(products)
     
     # Pagination - 10 products per page
-    paginator = Paginator(products, 10)
+    paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
     
