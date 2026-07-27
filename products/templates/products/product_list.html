@@ -1,0 +1,119 @@
+{% extends 'parent/base.html' %}
+{% load static %}
+
+{% block title %}لیست محصولات{% endblock %}
+
+{% block content %}
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container">
+        <h1><i class="fas fa-box"></i> محصولات</h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Sidebar - Categories -->
+        <div class="col-md-3 mb-4">
+            <div class="filter-sidebar">
+                <h5><i class="fas fa-tags"></i> دسته‌بندی</h5>
+                <div class="list-group">
+                    <a href="{% url 'products:product_list' %}" 
+                       class="list-group-item {% if not category %}active{% endif %}">
+                        <i class="fas fa-th-list"></i> همه محصولات
+                    </a>
+                    {% for cat in categories %}
+                        <a href="{{ cat.get_absolute_url }}" 
+                           class="list-group-item {% if category.slug == cat.slug %}active{% endif %}">
+                            <i class="fas fa-folder"></i> {{ cat.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+                
+                <hr>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-boxes"></i> تعداد محصولات: {{ products.paginator.count }}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-md-9">
+            {% if category %}
+                <h4 class="mb-3" style="color: var(--primary-blue-dark);">
+                    <i class="fas fa-folder-open"></i> {{ category.name }}
+                </h4>
+            {% endif %}
+
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <div class="card card-product">
+                            {% with first_image=product.images.first %}
+                                {% if first_image %}
+                                    <img src="{{ first_image.file.url }}" 
+                                         class="card-img-top" 
+                                         alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/300x250/4a8bc2/ffffff?text=No+Image" 
+                                         class="card-img-top" 
+                                         alt="بدون تصویر">
+                                {% endif %}
+                            {% endwith %}
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{{ product.get_absolute_url }}">
+                                        {{ product.name }}
+                                    </a>
+                                </h5>
+                                <p class="price">
+                                    <i class="fas fa-toman"></i> 
+                                    {{ product.price|floatformat:0 }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> 
+                            محصولی برای نمایش وجود ندارد.
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination pagination-custom justify-content-center">
+                        {% if products.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.previous_page_number }}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in products.paginator.page_range %}
+                            <li class="page-item {% if products.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+
+                        {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.next_page_number }}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

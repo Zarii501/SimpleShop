@@ -1,0 +1,253 @@
+{% extends 'parent/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-detail-container {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(44, 107, 158, 0.1);
+        margin-top: 2rem;
+    }
+    
+    .product-image-main {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .product-thumbnails {
+        display: flex;
+        gap: 10px;
+        margin-top: 1rem;
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+    
+    .product-thumbnails img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    
+    .product-thumbnails img:hover {
+        border-color: var(--primary-blue);
+        transform: scale(1.05);
+    }
+    
+    .product-info h1 {
+        color: var(--primary-blue-dark);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    
+    .product-info .price-large {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-blue);
+        padding: 0.5rem 0;
+        border-bottom: 2px solid #e8f0f8;
+        margin-bottom: 1.5rem;
+    }
+    
+    .product-info .price-large i {
+        font-size: 1.2rem;
+        margin-left: 5px;
+    }
+    
+    .specs-table {
+        width: 100%;
+        margin: 1.5rem 0;
+    }
+    
+    .specs-table tr {
+        border-bottom: 1px solid #f0f6fc;
+    }
+    
+    .specs-table td {
+        padding: 0.8rem 0;
+    }
+    
+    .specs-table .label {
+        font-weight: 600;
+        color: var(--primary-blue-dark);
+        width: 40%;
+    }
+    
+    .specs-table .value {
+        color: #333;
+        width: 60%;
+    }
+    
+    .badge-custom {
+        background: var(--primary-blue);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .product-description {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #e8f0f8;
+    }
+    
+    .product-description h4 {
+        color: var(--primary-blue-dark);
+        margin-bottom: 1rem;
+    }
+    
+    .product-description p {
+        line-height: 1.8;
+        color: #555;
+        text-align: justify;
+    }
+    
+    .btn-back {
+        display: inline-block;
+        margin-top: 2rem;
+    }
+    
+    .inventory-status {
+        font-size: 1.1rem;
+        margin: 1rem 0;
+    }
+    
+    .inventory-status .in-stock {
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    .inventory-status .out-of-stock {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+        .product-image-main {
+            height: 300px;
+        }
+        
+        .product-detail-container {
+            padding: 1rem;
+        }
+        
+        .product-info h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mt-3">
+            <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}" style="color: var(--primary-blue);">محصولات</a></li>
+            <li class="breadcrumb-item"><a href="{{ product.category.get_absolute_url }}" style="color: var(--primary-blue);">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="product-detail-container">
+        <div class="row">
+            <!-- Images - Right Side -->
+            <div class="col-md-6">
+                {% with images=product.images.all %}
+                    {% if images %}
+                        <img src="{{ images.first.file.url }}" 
+                             id="mainImage"
+                             class="product-image-main" 
+                             alt="{{ product.name }}">
+                        
+                        {% if images|length > 1 %}
+                            <div class="product-thumbnails">
+                                {% for image in images %}
+                                    <img src="{{ image.file.url }}" 
+                                         onclick="changeMainImage(this.src)"
+                                         alt="تصویر {{ forloop.counter }}">
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <img src="https://via.placeholder.com/600x500/4a8bc2/ffffff?text=No+Image" 
+                             class="product-image-main" 
+                             alt="بدون تصویر">
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Product Info - Left Side -->
+            <div class="col-md-6 product-info">
+                <h1>{{ product.name }}</h1>
+                
+                <div class="price-large">
+                    <i class="fas fa-toman"></i> 
+                    {{ product.price|floatformat:0 }}
+                </div>
+
+                <div class="inventory-status">
+                    {% if product.inventory > 0 %}
+                        <span class="in-stock">
+                            <i class="fas fa-check-circle"></i> موجود در انبار ({{ product.inventory }} عدد)
+                        </span>
+                    {% else %}
+                        <span class="out-of-stock">
+                            <i class="fas fa-times-circle"></i> ناموجود
+                        </span>
+                    {% endif %}
+                </div>
+
+                <table class="specs-table">
+                    <tr>
+                        <td class="label"><i class="fas fa-tag"></i> برند</td>
+                        <td class="value">{{ product.brand }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label"><i class="fas fa-folder"></i> دسته‌بندی</td>
+                        <td class="value">{{ product.category.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label"><i class="fas fa-plug"></i> نوع اتصال</td>
+                        <td class="value">{{ product.connectiontype }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label"><i class="fas fa-palette"></i> رنگ</td>
+                        <td class="value">{{ product.color }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label"><i class="fas fa-shield-alt"></i> گارانتی</td>
+                        <td class="value">{{ product.warranty }}</td>
+                    </tr>
+                </table>
+
+                <div class="product-description">
+                    <h4><i class="fas fa-align-left"></i> توضیحات</h4>
+                    <p>{{ product.description|linebreaks }}</p>
+                </div>
+
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary-custom btn-back">
+                    <i class="fas fa-arrow-right"></i> بازگشت به لیست محصولات
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeMainImage(src) {
+        document.getElementById('mainImage').src = src;
+    }
+</script>
+{% endblock %}
