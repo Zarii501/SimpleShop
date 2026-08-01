@@ -2,6 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from .models import *
 import random
+from django.http import JsonResponse
+from rag.service import ask
+import json
+from django.views.decorators.csrf import csrf_exempt
+import subprocess
+import sys
+from django.http import JsonResponse
 
 def product_list(request, category_slug=None):
     category = None
@@ -34,3 +41,43 @@ def product_detail(request, id, slug):
         'product': product
     }
     return render(request, 'products/product_detail.html', context)
+
+
+def chat(request):
+
+    question = request.GET.get("question", "")
+
+    if question == "":
+        return JsonResponse(
+            {
+                "answer": "لطفاً سؤال خود را وارد کنید."
+            }
+        )
+
+    answer = ask(question)
+
+    return JsonResponse(
+        {
+            "answer": answer
+        }
+    )
+
+
+@csrf_exempt
+def chat_api(request):
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        question = data.get("question")
+
+        answer = ask(question)
+
+        return JsonResponse({
+            "answer": answer
+        })
+
+    return JsonResponse({
+        "answer": "درخواست نامعتبر"
+    })
