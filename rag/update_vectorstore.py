@@ -1,41 +1,41 @@
 import os
 import sys
 import django
+from django.apps import apps as django_apps
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
-os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE",
-    "shop.settings"
-)
+if not django_apps.ready:
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "shop.settings")
+    django.setup()
 
-django.setup()
-
-from rag.loader import documents
+from rag.loader import load_all_documents
 from rag.embedding import embedding_model
+from rag.vectorstore import PERSIST_DIRECTORY, COLLECTION_NAME, get_vector_db
 from langchain_community.vectorstores import Chroma
 
-DB_PATH = "chroma_db"
 
-try:
+def rebuild():
+    documents = load_all_documents()
+    ids = [str(doc.metadata["id"]) for doc in documents]
 
-    vector_db = Chroma(
-        persist_directory=DB_PATH,
-        embedding_function=embedding_model
-    )
+    db = get_vector_db()
+    try:
+        db.delete_collection()
+    except Exception:
+        pass
 
-    # حذف همه داده‌های قبلی
-    vector_db.delete_collection()
-
-    # ساخت Collection جدید
-    vector_db = Chroma.from_documents(
+    Chroma.from_documents(
         documents=documents,
+        ids=ids,
         embedding=embedding_model,
-        persist_directory=DB_PATH
+        persist_directory=PERSIST_DIRECTORY,
+        collection_name=COLLECTION_NAME,
+        collection_metadata={"hnsw:space": "cosine"},
     )
+    print(f"Vector Database Rebuilt with {len(documents)} products.")
 
-    print("Vector Database Updated.")
 
-except Exception as e:
-    print(e)
+if __name__ == "__main__":
+    rebuild()
