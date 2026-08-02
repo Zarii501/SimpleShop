@@ -12,9 +12,8 @@ def generate(prompt):
         prompt=prompt,
         options={
             "temperature": 0.0,
-            "num_predict": 120,
+            "num_predict": 200,
         }
     )
 
     return response["response"]
-

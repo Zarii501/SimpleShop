@@ -379,7 +379,7 @@
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class="fas fa-store"></i>
-                فروشگاه
+                فروشگاه لوازم جانبی کامپیوتر 
             </a>
         </div>
     </nav>
@@ -420,7 +420,7 @@
 
         <br><br>
 
-        هر سوالی درباره محصولات فروشگاه داری بپرس.
+        هر سوالی درباره محصولات فروشگاه داری بپرس که کمکت کنم.
 
         </div>
 
@@ -450,36 +450,27 @@
 
 <script>
 
-const chatButton=document.getElementById("chatButton");
+const chatButton = document.getElementById("chatButton");
+const chatWindow = document.getElementById("chatWindow");
+const closeChat = document.getElementById("closeChat");
 
-const chatWindow=document.getElementById("chatWindow");
+chatButton.onclick = function () {
+    chatWindow.style.display = "block";
+};
 
-const closeChat=document.getElementById("closeChat");
+closeChat.onclick = function () {
+    chatWindow.style.display = "none";
+};
 
-chatButton.onclick=function(){
-
-    chatWindow.style.display="block";
-
-}
-
-closeChat.onclick=function(){
-
-    chatWindow.style.display="none";
-
-}
-
-const sendButton=document.getElementById("sendButton");
-
-const questionInput=document.getElementById("questionInput");
-
+const sendButton = document.getElementById("sendButton");
+const questionInput = document.getElementById("questionInput");
 const chatBody = document.querySelector(".chat-body");
 
-sendButton.onclick=function(){
+sendButton.onclick = function () {
 
     const question = questionInput.value.trim();
-    
 
-    if(question=="")
+    if (question === "")
         return;
 
     chatBody.innerHTML += `
@@ -488,7 +479,7 @@ sendButton.onclick=function(){
     </div>
     `;
 
-    questionInput.value="";
+    questionInput.value = "";
 
     chatBody.innerHTML += `
     <div class="bot-message" id="loading">
@@ -498,38 +489,39 @@ sendButton.onclick=function(){
 
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    fetch("/shop/chat/",{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/json"
+    fetch("/shop/chat/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
         },
-
-        body:JSON.stringify({
-
-            question:questionInput.value
-
+        body: JSON.stringify({
+            question: question  
         })
-
     })
-
     .then(response => response.json())
-.then(data => {
+    .then(data => {
+        document.getElementById("loading").remove();
 
-    document.getElementById("loading").remove();
+        chatBody.innerHTML += `
+            <div class="bot-message">
+                🤖 ${data.answer}
+            </div>
+        `;
 
-    chatBody.innerHTML += `
-        <div class="bot-message">
-            🤖 ${data.answer}
-        </div>
-    `;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    })
+    .catch(error => {
+        const loadingEl = document.getElementById("loading");
+        if (loadingEl) loadingEl.remove();
 
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-});
-
-}
+        chatBody.innerHTML += `
+            <div class="bot-message">
+                ⚠️ خطا در ارتباط با سرور. دوباره تلاش کنید.
+            </div>
+        `;
+        console.error(error);
+    });
+};
 
 </script>
 </body>

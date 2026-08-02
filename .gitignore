@@ -1,0 +1,5 @@
+*.__pycashe__
+media
+chroma_db
+*.pyc
+db.sqlite3
