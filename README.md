@@ -7,7 +7,7 @@
 
 از آنجا که تمامی پردازش‌ها به صورت محلی انجام می‌شوند، پروژه هیچ وابستگی به سرویس‌های ابری یا اینترنت بین‌الملل ندارد و می‌تواند حتی درصورت اختلال اینترنت بین‌الملل، فعالیت کند.
 
-![alt text](image.png)
+![alt text](images/image.png)
 
 ---
 
@@ -100,24 +100,24 @@ shop/
 
 * صفحه اصلی فروشگاه
 <p align="center">
-  <img src="image.png" alt="تصویر پروژه" width="1000">
+  <img src="images/image.png" alt="تصویر پروژه" width="1000">
 </p>
 
 
 * صفحه اصلی فروشگاه با یک دسته بندی خاص
 <p align="center">
-  <img src="image-2.png" alt="تصویر پروژه" width="1000">
+  <img src="images/image1.png" alt="تصویر پروژه" width="1000">
 </p>
 
 
 * صفحه جزئیات محصول
 <p align="center">
-  <img src="image-3.png" alt="تصویر پروژه" width="1000">
+  <img src="images/image2.png" alt="تصویر پروژه" width="1000">
 </p>
 
 * پنل مدیریت جنگو
 <p align="center">
-  <img src="image-6.png" alt="تصویر پروژه" width="1000">
+  <img src="images/image3.png" alt="تصویر پروژه" width="1000">
 </p>
 
 
@@ -125,12 +125,12 @@ shop/
 <div style="display: flex; justify-content: space-between; align-items: center;">
   <div style="width: 50%;">
     <p align="center">
-      <img src="image-5.png" alt="نمونه مکالمه ۱" width="85%">
+      <img src="images/image5.png" alt="نمونه مکالمه ۱" width="85%">
     </p>
   </div>
   <div style="width: 50%;">
     <p align="center">
-      <img src="image-4.png" alt="نمونه مکالمه ۲" width="85%">
+      <img src="images/image4.png" alt="نمونه مکالمه ۲" width="85%">
     </p>
   </div>
 </div>
